@@ -8,7 +8,11 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 const connection = mysql.createConnection({
-    uri: process.env.MYSQL_URL
+    host: process.env.MYSQLHOST || process.env.RAILWAY_TCP_PROXY_DOMAIN,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: process.env.MYSQLPORT || process.env.RAILWAY_TCP_PROXY_PORT
 });
 
 connection.connect((err) => {
@@ -94,4 +98,7 @@ app.put('/livres/:id', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serveur lancé sur le port ${PORT}`);
+    console.log('HOST:', process.env.MYSQLHOST);
+console.log('USER:', process.env.MYSQLUSER);
+console.log('PORT:', process.env.MYSQLPORT);
 });
