@@ -96,10 +96,10 @@ app.put('/livres/:id', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Serveur lancé sur le port ${PORT}`);
     console.log('HOST:', process.env.MYSQLHOST);
-console.log('USER:', process.env.MYSQLUSER);
-console.log('PORT:', process.env.MYSQLPORT);
+    console.log('USER:', process.env.MYSQLUSER);
+    console.log('PORT:', process.env.MYSQLPORT);
 });
