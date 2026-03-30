@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ma Bibliothèque</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; text-align: center; }
+        .livre {
+            background-color: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .titre { font-size: 20px; font-weight: bold; color: #2c3e50; }
+        .annee { color: #888; margin-top: 5px; }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        input {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Ma Bibliothèque</h1>
+    
+    <input type="text" id="recherche" placeholder="🔍 Rechercher un livre..." oninput="rechercherLivres()" style="width: 100%; margin-bottom: 20px; box-sizing: border-box;"/>
+    
+    <form>
+        <input type="text" id="titre" placeholder="Titre du livre" />
+        <input type="number" id="annee" placeholder="Année" />
+        <input type="number" id="auteur_id" placeholder="ID auteur" />
+        <button onclick="ajouterLivre()">Ajouter</button>
+    </form>
+
+    <div id="livres"></div>
+
+    <script>
+        function chargerLivres() {
+            fetch('http://localhost:3000/livres')
+                .then(res => res.json())
+                .then(livres => {
+                    const container = document.getElementById('livres');
+                    container.innerHTML = '';
+                    livres.forEach(livre => {
+                        container.innerHTML += `
+                            <div class="livre">
+                                <div class="titre">${livre.titre}</div>
+                                <div class="annee">📅 ${livre.annee}</div>
+                                <div class="annee">✍️ ${livre.auteur}</div>
+                                <button onclick="modifierLivretitre(${livre.id}, '${livre.titre}')" style="background-color: #f39c12;">✏️ Modifier le titre</button>
+                                <button onclick="modifierLivreannee(${livre.id}, '${livre.annee}')" style="background-color: #f39c12;">✏️ Modifier l'annee</button>
+                                <button onclick="supprimerLivre(${livre.id})" style="background-color: #e74c3c; margin-top: 10px;">🗑️ Supprimer</button>
+                            </div>
+                        `;
+                    });
+                });
+        }
+
+        function ajouterLivre() {
+            const titre = document.getElementById('titre').value;
+            const annee = document.getElementById('annee').value;
+            const auteur_id = document.getElementById('auteur_id').value;
+
+            fetch('http://localhost:3000/livres', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titre, annee, auteur_id })
+            })
+            .then(res => res.json())
+            .then(() => {
+                chargerLivres();
+            });
+        }
+
+        function modifierLivretitre (id, titre, annee) {
+            const nouveauTitre = prompt('Nouveau titre :', titre);
+           
+
+            if (nouveauTitre) {
+                fetch(`http://localhost:3000/livres/${id}`, {
+                 method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titre: nouveauTitre})
+             })
+            .then(res => res.json())
+            .then(() => {
+                chargerLivres();
+            });
+             }
+        }
+                function modifierLivreannee (id, annee) {
+            
+            const nouvelleAnnee = prompt('Nouvelle année :', annee);
+
+            if (nouvelleAnnee) {
+                fetch(`http://localhost:3000/livres/${id}`, {
+                 method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({annee: nouvelleAnnee })
+             })
+            .then(res => res.json())
+            .then(() => {
+                chargerLivres();
+            });
+             }
+        }
+
+        function rechercherLivres() {
+            const recherche = document.getElementById('recherche').value.toLowerCase();
+            const livres = document.querySelectorAll('.livre');
+            livres.forEach(livre => {
+            const titre = livre.querySelector('.titre').textContent.toLowerCase();
+            if (titre.includes(recherche)) {
+            livre.style.display = 'block';
+            } else {
+            livre.style.display = 'none';
+            }
+            });
+        }
+
+
+        function supprimerLivre(id) {
+          fetch(`http://localhost:3000/livres/${id}`, {
+            method: 'DELETE'
+         })
+        .then(res => res.json())
+        .then(() => {
+             chargerLivres();
+        });
+        }
+
+        chargerLivres();
+    </script>
+</body>
+</html>
