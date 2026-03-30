@@ -7,7 +7,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const connection = mysql.createConnection(process.env.MYSQL_URL);
+const connection = mysql.createConnection({
+    uri: process.env.MYSQL_URL
+});
 
 connection.connect((err) => {
     if (err) {
@@ -59,3 +61,37 @@ app.delete('/livres/:id', (req, res) => {
             }
             res.json({ message: 'Livre supprimé !' });
         }
+    );
+});
+
+app.put('/livres/:id', (req, res) => {
+    const id = req.params.id;
+    const { titre, annee } = req.body;
+
+    let query = '';
+    let params = [];
+
+    if (titre && annee) {
+        query = 'UPDATE livres SET titre = ?, annee = ? WHERE id = ?';
+        params = [titre, annee, id];
+    } else if (titre) {
+        query = 'UPDATE livres SET titre = ? WHERE id = ?';
+        params = [titre, id];
+    } else if (annee) {
+        query = 'UPDATE livres SET annee = ? WHERE id = ?';
+        params = [annee, id];
+    }
+
+    connection.query(query, params, (err, results) => {
+        if (err) {
+            res.send('Erreur');
+            return;
+        }
+        res.json({ message: 'Livre modifié !' });
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Serveur lancé sur le port ${PORT}`);
+});
