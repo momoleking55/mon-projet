@@ -8,10 +8,11 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 const connection = mysql.createConnection({
-    socketPath: '/tmp/mysql.sock',
-    user: 'root',
-    password: 'Poiuytreza',
-    database: 'bibliotheque'
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: process.env.MYSQLPORT
 });
 
 connection.connect((err) => {
@@ -99,6 +100,7 @@ app.put('/livres/:id', (req, res) => {
 
 
 
-app.listen(3000, () => {
-    console.log('Serveur lancé sur http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Serveur lancé sur le port ${PORT}`);
 });
