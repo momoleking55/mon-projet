@@ -8,11 +8,11 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 const connection = mysql.createConnection({
-    host: process.env.MYSQLHOST,
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT
+    host: 'mysql.railway.internal',
+    user: 'root',
+    password: 'pIofywhBXTnmCaxXSDreStTsBJtQdwYX',
+    database: 'railway',
+    port: 3306
 });
 
 
